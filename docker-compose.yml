@@ -1,0 +1,30 @@
+services:
+  # .NET Core application
+  webapp:
+    build:
+      context: .  
+    image: my_dotnet_app1  
+    container_name: my_dotnet_app1  
+    ports:
+      - "5000:80" 
+    depends_on:
+      - db  # 
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Username=postgres1;Password=mysecretpassword1;Database=CrimeDB
+
+  # PostgreSQL Database
+  db:
+    image: postgres:latest
+    container_name: my_postgres_db1
+    environment:
+      POSTGRES_USER: postgres1
+      POSTGRES_PASSWORD: mysecretpassword1
+      POSTGRES_DB: CrimeDB
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
