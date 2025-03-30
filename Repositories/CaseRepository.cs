@@ -62,11 +62,16 @@ namespace CrimeManagementSystem.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<Case> CreateAsync(Case newCase)
+        public async Task<int> CreateAsync(Case newCase)
         {
-            await _context.Cases.AddAsync(newCase);
-            await _context.SaveChangesAsync();
-            return newCase;
+            if (newCase == null)
+            {
+                throw new ArgumentNullException(nameof(newCase), "Case cannot be null");
+            }
+            await _context.Cases.AddAsync(newCase);  
+            await _context.SaveChangesAsync(); 
+            
+            return newCase.CaseId; 
         }
 
         public async Task<Case> UpdateAsync(Case updatedCase)
@@ -108,6 +113,6 @@ namespace CrimeManagementSystem.Repositories
         public async Task<Case?> GetCaseByReportIdAsync(string reportId)
         {
             return await _context.Cases.FirstOrDefaultAsync(c => c.CaseNumber == reportId);
-        }        
-}
+        }
+    }
 }

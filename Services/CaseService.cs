@@ -92,15 +92,35 @@ namespace CrimeManagementSystem.Services
         }
 
         // Implement CreateCaseAsync
-        public async Task<int> CreateCaseAsync(Case newCase)
+        public async Task<int> CreateAsync(CaseDetailsDto caseDetailsDto, string userId)
         {
-            if (newCase == null)
-                throw new ArgumentNullException(nameof(newCase));
+            if (caseDetailsDto == null)
+            {
+                throw new ArgumentNullException(nameof(caseDetailsDto), "Case details cannot be null");
+            }
 
-            // Assuming you have a method in the repository to create a new case
-            var createdCase = await _caseRepository.CreateAsync(newCase);
-            return createdCase.CaseId; // Return the created case's ID
+            var newCase = new Case
+            {
+                CaseName = caseDetailsDto.CaseName,
+                CaseNumber = caseDetailsDto.CaseNumber,
+                Description = caseDetailsDto.Description,
+                Area = caseDetailsDto.Area,
+                City = caseDetailsDto.City,
+                CaseType = caseDetailsDto.CaseType,
+                CaseLevel = caseDetailsDto.Level,
+                AuthorizationLevel = caseDetailsDto.AuthorizationLevel,
+                CreatedBy = userId, 
+                CreatedAt = DateTime.UtcNow,
+                Assignees = caseDetailsDto.Assignees.Select(a => new Assignee { /*  Assignee */ }).ToList(),
+                Persons = caseDetailsDto.Persons.Select(p => new Person { /*  Person */ }).ToList(),
+                CrimeReports = new List<CrimeReport>() //CrimeReports
+            };
+
+            var createdCaseId = await _caseRepository.CreateAsync(newCase);
+            
+            return createdCaseId;
         }
+
 
         // Implement UpdateCaseAsync
         public async Task<Case> UpdateCaseAsync(int caseId, CaseDetailsDto caseDetailsDto)

@@ -53,27 +53,19 @@ namespace CrimeManagementSystem.Controllers
                 return Unauthorized(new { message = "User is not authenticated" });
             }
 
-            var newCase = new Case
+            if (!ModelState.IsValid)
             {
-                // Map properties from DTO to Model
-                CaseName = caseDetailsDto.CaseName,
-                CaseNumber = caseDetailsDto.CaseNumber,
-                Description = caseDetailsDto.Description,
-                Area = caseDetailsDto.Area,
-                City = caseDetailsDto.City,
-                CaseType = caseDetailsDto.CaseType,
-                CaseLevel = caseDetailsDto.Level,
-                AuthorizationLevel = caseDetailsDto.AuthorizationLevel,
-                CreatedBy = userId, // Linking to the user who created it
-                CreatedAt = DateTime.UtcNow, // Set current time
-                Assignees = caseDetailsDto.Assignees.Select(a => new Assignee { /* map Assignee data */ }).ToList(),
-                Persons = caseDetailsDto.Persons.Select(p => new Person { /* map Person data */ }).ToList(),
-                CrimeReports = new List<CrimeReport>() // Initialize empty CrimeReports list
-            };
+                return BadRequest(new { message = "Invalid case details", details = ModelState });
+            }
 
-            var caseId = await _caseService.CreateCaseAsync(newCase);
-            return caseId <= 0 ? BadRequest(new { message = "Failed to create the case" })
-                               : CreatedAtAction(nameof(GetCaseByIdAsync), new { caseId }, new { caseId });
+            var caseId = await _caseService.CreateAsync(caseDetailsDto, userId);
+
+            if (caseId <= 0)
+            {
+                return BadRequest(new { message = "Failed to create the case" });
+            }
+
+            return CreatedAtAction(nameof(GetCaseByIdAsync), new { caseId }, new { caseId });
         }
 
         // Update an existing case

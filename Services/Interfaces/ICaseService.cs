@@ -8,7 +8,7 @@ public interface ICaseService
 {
     Task<List<Case>> GetAllCasesAsync();
     Task<CaseDetailsDto> GetCaseByIdAsync(int caseId);    
-    Task<int> CreateCaseAsync(Case newCase);
+    Task<int> CreateAsync(CaseDetailsDto caseDetailsDto, string userId);
     Task<Case> UpdateCaseAsync(int caseId, CaseDetailsDto caseDetailsDto);
     Task<CaseDetailResponseDto> GetCaseDetailsAsync(int caseId);
     Task<List<AssigneeDto>> GetCaseAssigneesAsync(int caseId);
